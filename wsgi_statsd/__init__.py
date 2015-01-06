@@ -10,7 +10,7 @@ class StatsdTimingMiddleware(object):
 
     """The Statsd timing middleware."""
 
-    def __init__(self, app, prefix=None, host=None, port=None):
+    def __init__(self, app, prefix, host, port):
         """If host or port are not defined a connection to Statsd cannot be made.
 
         :arg app: The application.
@@ -21,8 +21,6 @@ class StatsdTimingMiddleware(object):
         :arg port: Statsd server port.
         :type port: str
         """
-        if not all([prefix, host, port]):
-            raise Exception("Statsd requires a prefix, and a host and port to connect to.")
         self.app = app
         self.statsd_client = statsd.StatsClient(host, port, prefix)
 
@@ -31,11 +29,7 @@ class StatsdTimingMiddleware(object):
         timer = self.statsd_client.timer(environ['PATH_INFO'])
 
         timer.start()
-        result = self.app(environ, start_response)
-
-        if hasattr(result, 'close'):
-            result.close()
-
+        application = self.app(environ, start_response)
         timer.stop()
 
-        return result
+        return application
