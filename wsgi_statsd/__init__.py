@@ -1,35 +1,28 @@
 # -*- coding: utf-8 -*-
-""""""
-import statsd
+"""StatsdTimingMiddleware object."""
 
 __author__ = 'Wouter Lansu'
-__version__ = '0.1a1.dev1'
+__version__ = '1.0.0'
 
 
 class StatsdTimingMiddleware(object):
 
     """The Statsd timing middleware."""
 
-    def __init__(self, app, prefix, host, port):
-        """If host or port are not defined a connection to Statsd cannot be made.
+    def __init__(self, app, client):
+        """Initialize the middleware with an application and a Statsd client.
 
         :arg app: The application.
-        :arg prefix: Helps distinguish multiple applications or environments using the same statsd server.
-        :type prefix: str
-        :arg host: The host running the statsd server, supports any kind of name or IP address.
-        :type host: str
-        :arg port: Statsd server port.
-        :type port: str
+        :arg client: `statsd.StatsClient` object.
         """
         self.app = app
-        self.statsd_client = statsd.StatsClient(host, port, prefix)
+        self.statsd_client = client
 
     def __call__(self, environ, start_response):
         """Call the application and time it."""
-        timer = self.statsd_client.timer(environ['PATH_INFO'])
+        key_name = environ['PATH_INFO'] + '.' + environ['REQUEST_METHOD']
 
-        timer.start()
-        result = self.app(environ, start_response)
-        timer.stop()
+        with self.statsd_client.timer(key_name):
+            result = self.app(environ, start_response)
 
         return result
