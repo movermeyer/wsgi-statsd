@@ -29,7 +29,7 @@ class StatsdTimingMiddleware(object):
         timer = self.statsd_client.timer(environ['PATH_INFO'])
 
         timer.start()
-        application = self.app(environ, start_response)
+        result = self.app(environ, start_response)
         timer.stop()
 
-        return application
+        return result
