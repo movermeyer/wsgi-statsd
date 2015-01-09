@@ -8,6 +8,7 @@ from wsgi_statsd import StatsdTimingMiddleware
 
 
 def application(environ, start_response):
+    """Simple application for test purposes."""
     response_body = 'The request method was %s' % environ['REQUEST_METHOD']
     status = '200 OK'
     response_headers = [('Content-Type', 'text/plain'),
@@ -19,14 +20,13 @@ def application(environ, start_response):
 
 
 @mock.patch('statsd.StatsClient')
-def test_timer(mock_client):
+def test_timer1(mock_client):
     """Test the timer functionality.
 
-    Checks that the key is stored as expected, i.e. PATH_INFO + . + REQUEST_METHOD.
+    Checks that the key is generated as expected, i.e. PATH_INFO + . + REQUEST_METHOD.
     """
     timed_app = StatsdTimingMiddleware(application, mock_client)
     app = TestApp(timed_app)
     app.get('/test')
 
-    assert mock_client.timer.call_args[0] == ('/test.GET',)
-
+    assert mock_client.timer.call_args[0] == ('/test.GET.200 OK',)

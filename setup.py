@@ -3,7 +3,8 @@
 # Setup script for the `wsgi-statsd' package.
 #
 # Author: Wouter Lansu <wouter.lansu@paylogic.eu>
-# Last Change: January, 6, 2015
+# Last Change: January, 9, 2015
+
 import codecs
 import sys
 from os.path import abspath, dirname, join
@@ -42,7 +43,6 @@ class ToxTestCommand(TestCommand):
 # External dependencies.
 install_requires = [
     'statsd >= 3.0.1',
-
 ]
 
 long_description = []

@@ -25,20 +25,38 @@ In your wsgi.py file wrap your WSGI application as follows:
 
 .. code-block:: python
 
-   import StatsdTimingMiddleware
+    import statsd
+    import StatsdTimingMiddleware
 
-   application = StatsdTimingMiddleware(original_application, 'statsd_prefix', 'statsd_host', 8125)
+
+    def application(environ, start_response):
+        response_body = 'The request method was %s' % environ['REQUEST_METHOD']
+        status = '200 OK'
+        response_headers = [('Content-Type', 'text/plain'),
+                            ('Content-Length', str(len(response_body)))]
+
+        start_response(status, response_headers)
+
+        return [response_body]
+
+    client = statsd.StatsClient(
+        prefix='your_prefix',
+        host='your_host',
+        port=8125
+    )
+
+    application = StatsdTimingMiddleware(application, client)
 
 What it does
 ------------
 
-The middleware uses the statsd timer function, using the environ['PATH_INFO'] variable as a namespace.
-It sends the amount of time the request took to the statsd server.
+The middleware uses the statsd timer function, using the environ['PATH_INFO'], environ['REQUEST_METHOD'] and
+the status code variables as the name for the key and the amount of time the request took as the value.
 
 That's it.
 
 If you want more granular reporting you'll have to work with the `prefix` argument. You can pass any string you want
 and the middleware will pass it along to statsd.
 
-Using the `foo` prefix and calling the `www.spam.com/bar` page will result in `foo.bar` having a value equal to the
-time it took to handle the request.
+Using the `foo` prefix and calling the `www.spam.com/bar` page will result in `foo.bar.GET.200 OK` having a value
+equal to the time it took to handle the request.
