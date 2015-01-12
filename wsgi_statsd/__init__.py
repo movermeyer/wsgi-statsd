@@ -38,7 +38,7 @@ class StatsdTimingMiddleware(object):
         stop = time.time()
 
         # Now we can generate the key name.
-        status = re.sub(" \w+", "", interception['status'])  # Leave only the status code.
+        status = interception['status'].split()[0]  # Leave only the status code.
         key_name = '.'.join([environ['PATH_INFO'], environ['REQUEST_METHOD'], status])
 
         # Create the timer object and send the data to statsd.
