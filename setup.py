@@ -3,13 +3,13 @@
 # Setup script for the `wsgi-statsd' package.
 #
 # Author: Wouter Lansu <wouter.lansu@paylogic.eu>
-# Last Change: January, 9, 2015
+# Last Change: January, 12, 2015
 
 import codecs
 import sys
 from os.path import abspath, dirname, join
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
 import wsgi_statsd
@@ -79,33 +79,3 @@ setup(
     install_requires=install_requires,
     tests_require=["tox"],
 )
-
-# setup(
-#     name='wsgi-statsd',
-#     version=wsgi_statsd.__version__,
-#     description="WSGI middleware for statsd timing",
-#     long_description=long_description,
-#     url='https://github.com/paylogic/wsgi-statsd',
-#     author='Wouter Lansu, Paylogic International and others',
-#     author_email='developers@paylogic.com',
-#     packages=find_packages(),
-#     install_requires=install_requires,
-#     classifiers=[
-#         'Development Status :: 2 - Pre-Alpha',
-#         'Environment :: Other Environment',
-#         'Intended Audience :: Developers',
-#         'Intended Audience :: System Administrators',
-#         'License :: OSI Approved :: MIT License',
-#         'Operating System :: POSIX :: Linux',
-#         'Operating System :: Unix',
-#         'Programming Language :: Python',
-#         'Programming Language :: Python :: 2',
-#         'Programming Language :: Python :: 2.6',
-#         'Programming Language :: Python :: 2.7',
-#         'Programming Language :: Python :: 3',
-#         'Programming Language :: Python :: 3.4',
-#         'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware',
-#     ],
-#     cmdclass={"test": ToxTestCommand},
-#     test_require=["tox"]
-# ),
