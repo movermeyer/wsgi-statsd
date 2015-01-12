@@ -42,7 +42,7 @@ class ToxTestCommand(TestCommand):
 
 # External dependencies.
 install_requires = [
-    'statsd >= 3.0.1',
+    'statsd',
 ]
 
 long_description = []
@@ -53,31 +53,59 @@ for text_file in ['README.rst', 'CHANGES.rst']:
 
 
 setup(
-    name='wsgi-statsd',
-    version=wsgi_statsd.__version__,
+    name="wsgi-statsd",
     description="WSGI middleware for statsd timing",
-    long_description=long_description,
-    url='https://github.com/paylogic/wsgi-statsd',
-    author='Wouter Lansu, Paylogic International and others',
-    author_email='developers@paylogic.com',
-    packages=find_packages(),
-    install_requires=install_requires,
+    long_description='\n'.join(long_description),
+    author="Wouter Lansu, Paylogic International and others",
+    license="MIT license",
+    author_email="developers@paylogic.com",
+    url="https://github.com/paylogic/wsgi_statsd",
+    version=wsgi_statsd.__version__,
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Environment :: Other Environment',
-        'Intended Audience :: Developers',
-        'Intended Audience :: System Administrators',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: POSIX :: Linux',
-        'Operating System :: Unix',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware',
-    ],
+        "Development Status :: 6 - Mature",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: POSIX",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: MacOS :: MacOS X",
+        "Topic :: Software Development :: Testing",
+        "Topic :: Software Development :: Libraries",
+        "Topic :: Utilities",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3"
+    ] + [("Programming Language :: Python :: %s" % x) for x in "2.6 2.7 3.4".split()],
     cmdclass={"test": ToxTestCommand},
-    test_require=["tox"]
-),
+    packages=["wsgi_statsd"],
+    install_requires=install_requires,
+    tests_require=["tox"],
+)
+
+# setup(
+#     name='wsgi-statsd',
+#     version=wsgi_statsd.__version__,
+#     description="WSGI middleware for statsd timing",
+#     long_description=long_description,
+#     url='https://github.com/paylogic/wsgi-statsd',
+#     author='Wouter Lansu, Paylogic International and others',
+#     author_email='developers@paylogic.com',
+#     packages=find_packages(),
+#     install_requires=install_requires,
+#     classifiers=[
+#         'Development Status :: 2 - Pre-Alpha',
+#         'Environment :: Other Environment',
+#         'Intended Audience :: Developers',
+#         'Intended Audience :: System Administrators',
+#         'License :: OSI Approved :: MIT License',
+#         'Operating System :: POSIX :: Linux',
+#         'Operating System :: Unix',
+#         'Programming Language :: Python',
+#         'Programming Language :: Python :: 2',
+#         'Programming Language :: Python :: 2.6',
+#         'Programming Language :: Python :: 2.7',
+#         'Programming Language :: Python :: 3',
+#         'Programming Language :: Python :: 3.4',
+#         'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware',
+#     ],
+#     cmdclass={"test": ToxTestCommand},
+#     test_require=["tox"]
+# ),

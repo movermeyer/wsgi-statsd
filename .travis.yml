@@ -6,7 +6,7 @@ install:
 script: python setup.py test
 after_success:
   - pip install -r requirements-testing.txt -e .
-  - py.test --cov=wsgi-statsd --cov-report=term-missing tests
+  - py.test --cov=wsgi_statsd --cov-report=term-missing tests
   - coveralls
 notifications:
     email:

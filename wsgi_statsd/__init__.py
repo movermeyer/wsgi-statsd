@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """StatsdTimingMiddleware object."""
+import re
 import time
 
-__author__ = 'Wouter Lansu'
 __version__ = '1.0.0'
 
 
@@ -39,12 +38,13 @@ class StatsdTimingMiddleware(object):
         stop = time.time()
 
         # Now we can generate the key name.
-        key_name = '.'.join([environ['PATH_INFO'], environ['REQUEST_METHOD'], interception['status']])
+        status = re.sub(" \w+", "", interception['status'])  # Leave only the status code.
+        key_name = '.'.join([environ['PATH_INFO'], environ['REQUEST_METHOD'], status])
 
         # Create the timer object and send the data to statsd.
         timer = self.statsd_client.timer(key_name)
-        timer._start = start
-        timer._stop = stop
-        timer.stop()
+        time_delta = stop - start
+        timer.ms = int(round(1000 * time_delta))  # Convert to milliseconds.
+        timer.send()
 
         return result
