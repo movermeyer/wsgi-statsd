@@ -16,7 +16,10 @@ wsgi-statsd documentation
     :target: https://readthedocs.org/projects/wsgi-statsd/
 
 wsgi_statsd is a WSGI middleware that provides an easy way to time all requests.
-Integation is as easy as just wrapping your existing wsgi application.
+Integration is as easy as just wrapping your existing wsgi application.
+
+.. contents::
+
 
 Usage
 -----
@@ -26,7 +29,7 @@ In your wsgi.py file wrap your WSGI application as follows:
 .. code-block:: python
 
     import statsd
-    import StatsdTimingMiddleware
+    from wsgi_statsd import StatsdTimingMiddleware
 
 
     def application(environ, start_response):
@@ -55,10 +58,10 @@ the status code variables as the name for the key and the amount of time the req
 
 That's it.
 
-If you want more granular reporting you'll have to work with the `prefix` argument. You can pass any string you want
+If you want more granular reporting you'll have to work with the ``prefix`` argument. You can pass any string you want
 and the middleware will pass it along to statsd.
 
-Using the `foo` prefix and calling the `www.spam.com/bar` page will result in `foo.bar.GET.200` having a value
+Using the ``foo`` prefix and calling the ``www.spam.com/bar`` page will result in ``foo.bar.GET.200`` having a value
 equal to the time it took to handle the request.
 
 
@@ -74,7 +77,7 @@ License
 
 This software is licensed under the `MIT license <http://en.wikipedia.org/wiki/MIT_License>`_
 
-See `License file <https://github.com/paylogic/wsgi-statsd/blob/master/LICENSE.txt>`_
+Please refer to the `license file <https://github.com/paylogic/wsgi-statsd/blob/master/LICENSE.txt>`_
 
 
 © 2015 Wouter Lansu, Paylogic International and others.

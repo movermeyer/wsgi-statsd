@@ -3,4 +3,4 @@ pytest-cache
 pytest-cov
 pytest-pep8
 webtest
-six==1.9.0
+six

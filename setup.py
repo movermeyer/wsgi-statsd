@@ -40,11 +40,6 @@ class ToxTestCommand(TestCommand):
         errno = tox.cmdline(args=shlex.split(self.tox_args))
         sys.exit(errno)
 
-# External dependencies.
-install_requires = [
-    'statsd',
-]
-
 long_description = []
 
 for text_file in ['README.rst', 'CHANGES.rst']:
@@ -62,7 +57,7 @@ setup(
     url="https://github.com/paylogic/wsgi_statsd",
     version=wsgi_statsd.__version__,
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Other Environment',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
@@ -79,6 +74,6 @@ setup(
     ] + [("Programming Language :: Python :: %s" % x) for x in "2.6 2.7 3.4".split()],
     cmdclass={"test": ToxTestCommand},
     packages=["wsgi_statsd"],
-    install_requires=install_requires,
+    install_requires=['statsd'],
     tests_require=["tox"],
 )
