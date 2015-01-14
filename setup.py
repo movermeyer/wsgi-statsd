@@ -71,7 +71,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware'
-    ] + [("Programming Language :: Python :: %s" % x) for x in "2.6 2.7 3.4".split()],
+    ],
     cmdclass={"test": ToxTestCommand},
     packages=["wsgi_statsd"],
     install_requires=['statsd'],
