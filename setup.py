@@ -1,9 +1,4 @@
-#!/usr/bin/env python
-
-# Setup script for the `wsgi-statsd' package.
-#
-# Author: Wouter Lansu <wouter.lansu@paylogic.eu>
-# Last Change: January, 14, 2015
+"""Setup script for the `wsgi-statsd' package."""
 
 import codecs
 import sys
@@ -34,7 +29,7 @@ class ToxTestCommand(TestCommand):
 
     def run_tests(self):
         """Invoke the test runner (tox)."""
-        #import here, cause outside the eggs aren't loaded
+        # import here, cause outside the eggs aren't loaded
         import tox
         import shlex
         errno = tox.cmdline(args=shlex.split(self.tox_args))

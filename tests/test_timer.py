@@ -1,26 +1,33 @@
 """Tests for the wsgi-statsd package."""
-
 import mock
 import six
+from webob import Response
+from webob.response import AppIterRange
+
+import pytest
 from webtest import TestApp
+
 from wsgi_statsd import StatsdTimingMiddleware
 
 
 def application(environ, start_response):
     """Simple application for test purposes."""
-    response_body = 'The request method was %s' % environ['REQUEST_METHOD']
+    response_body = six.b('The request method was {0}'.format(environ['REQUEST_METHOD']))
+    response_len = len(response_body)
     status = '200 OK'
     response_headers = [('Content-Type', 'text/plain'),
-                        ('Content-Length', str(len(response_body)))]
+                        ('Content-Length', str(response_len))]
 
     start_response(status, response_headers)
 
-    if six.PY3:
-        response = [bytes(response_body, 'utf-8')]
-    else:
-        response = [response_body]
+    return Response(
+        app_iter=AppIterRange([response_body], 0, response_len), headerlist=response_headers).app_iter
 
-    return response
+
+def raising_application(environ, start_response):
+    """Application which raises an exception."""
+    application(environ, start_response)
+    raise Exception()
 
 
 @mock.patch('statsd.StatsClient')
@@ -49,7 +56,26 @@ def test_response_not_altered(mock_client):
     app = TestApp(timed_app)
     response = app.get('/test')
 
-    if six.PY3:
-        assert response.body == b'The request method was GET'
-    else:
-        assert response.body == 'The request method was GET'
+    assert response.body.decode() == u'The request method was GET'
+
+
+@mock.patch.object(AppIterRange, 'close')
+@mock.patch('statsd.StatsClient')
+def test_close_called(mock_client, mock_close):
+    """Assert that the response close is called when exists."""
+    timed_app = StatsdTimingMiddleware(application, mock_client)
+    app = TestApp(timed_app)
+    app.get('/test')
+    assert mock_close.called
+
+
+@pytest.mark.parametrize('time_exceptions', [False, True])
+@mock.patch('statsd.StatsClient')
+def test_exception(mock_client, time_exceptions):
+    """Assert that the response close is called when exists."""
+    with mock.patch.object(mock_client, 'timer', autospec=True) as mock_timer:
+        timed_app = StatsdTimingMiddleware(raising_application, mock_client, time_exceptions=time_exceptions)
+        app = TestApp(timed_app)
+        with pytest.raises(Exception):
+            app.get('/test')
+    assert mock_timer.return_value.send.called == time_exceptions

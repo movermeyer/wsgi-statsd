@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.1
+-----
+
+* ensure close() is properly called from the response (bubenkoff, GrahamDumpleton)
+* optionally time exceptions (bubenkoff)
+
 0.2.0
 -----
 

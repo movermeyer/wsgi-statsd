@@ -50,6 +50,7 @@ In your wsgi.py file wrap your WSGI application as follows:
 
     application = StatsdTimingMiddleware(application, client)
 
+
 What it does
 ------------
 
@@ -63,6 +64,19 @@ and the middleware will pass it along to statsd.
 
 Using the ``foo`` prefix and calling the ``www.spam.com/bar`` page will result in ``foo.bar.GET.200`` having a value
 equal to the time it took to handle the request.
+
+
+.. note::
+
+    If an unhandled exception happens, it will not be timed by default.
+    This is the design decision to separate error reporting and actual statistical measurements.
+    To enable exception timing, pass `time_exception=True` to the middleware constructor:
+
+
+.. code-block:: python
+
+    application = StatsdTimingMiddleware(application, client, time_exceptions=True)
+
 
 
 Contact
