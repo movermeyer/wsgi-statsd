@@ -3,7 +3,7 @@
 # Setup script for the `wsgi-statsd' package.
 #
 # Author: Wouter Lansu <wouter.lansu@paylogic.eu>
-# Last Change: January, 12, 2015
+# Last Change: January, 14, 2015
 
 import codecs
 import sys

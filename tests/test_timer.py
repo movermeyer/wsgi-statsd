@@ -40,3 +40,16 @@ def test_timer1(mock_client):
     assert mock_timer.return_value.send.called
     assert mock_timer.return_value.ms is not None
     assert mock_timer.call_args[0] == ('/test.GET.200',)
+
+
+@mock.patch('statsd.StatsClient')
+def test_response_not_altered(mock_client):
+    """Assert that the response was not changed by the middleware."""
+    timed_app = StatsdTimingMiddleware(application, mock_client)
+    app = TestApp(timed_app)
+    response = app.get('/test')
+
+    if six.PY3:
+        assert response.body == b'The request method was GET'
+    else:
+        assert response.body == 'The request method was GET'

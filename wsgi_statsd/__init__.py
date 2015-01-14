@@ -2,7 +2,7 @@
 import re
 import time
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 
 class StatsdTimingMiddleware(object):
@@ -34,7 +34,10 @@ class StatsdTimingMiddleware(object):
 
         # Time the call.
         start = time.time()
-        result = self.app(environ, start_response_wrapper)
+
+        for chunk in self.app(environ, start_response_wrapper):
+            yield chunk
+
         stop = time.time()
 
         # Now we can generate the key name.
@@ -46,5 +49,3 @@ class StatsdTimingMiddleware(object):
         time_delta = stop - start
         timer.ms = int(round(1000 * time_delta))  # Convert to milliseconds.
         timer.send()
-
-        return result
