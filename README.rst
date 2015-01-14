@@ -7,8 +7,8 @@ wsgi-statsd documentation
 .. image:: https://pypip.in/v/wsgi-statsd/badge.png
    :target: https://crate.io/packages/wsgi-statsd/
 
-.. image:: https://coveralls.io/repos/paylogic/wsgi-statsd/badge.png?branch=master
-   :target: https://coveralls.io/r/paylogic/wsgi-statsd
+.. image:: https://coveralls.io/repos/paylogic/wsgi-statsd/badge.svg?branch=master
+    :target: https://coveralls.io/r/paylogic/wsgi-statsd?branch=master
 
 wsgi_statsd is a WSGI middleware that provides an easy way to time all requests.
 Integration is as easy as just wrapping your existing wsgi application.
