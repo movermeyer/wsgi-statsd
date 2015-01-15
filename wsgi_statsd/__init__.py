@@ -50,10 +50,12 @@ class StatsdTimingMiddleware(object):
         start = time.time()
         try:
             response = self.app(environ, start_response_wrapper)
-            for event in response:
-                yield event
-            if hasattr(response, 'close'):
-                response.close()
+            try:
+                for event in response:
+                    yield event
+            finally:
+                if hasattr(response, 'close'):
+                    response.close()
             send_stats()
         except Exception:
             if self.time_exceptions:
