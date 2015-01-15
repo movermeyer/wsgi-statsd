@@ -35,7 +35,7 @@ def test_timer1(mock_client):
     """Test the timer functionality.
 
     Check the following:
-    - timer.send() is called
+    - timer.stop() is called
     - timer.ms is not None
     - the key is generated as expected, i.e. PATH_INFO.REQUEST_METHOD.RESPONSE_CODE.
     """
@@ -44,9 +44,9 @@ def test_timer1(mock_client):
         app = TestApp(timed_app)
         app.get('/test')
 
-    assert mock_timer.return_value.send.called
+    assert mock_timer.return_value.stop.called
     assert mock_timer.return_value.ms is not None
-    assert mock_timer.call_args[0] == ('/test.GET.200',)
+    assert mock_timer.call_args[0] == ('test.GET.200',)
 
 
 @mock.patch('statsd.StatsClient')
@@ -79,7 +79,7 @@ def test_exception_response(mock_client, mock_close, time_exceptions):
         app = TestApp(timed_app)
         with pytest.raises(Exception):
             app.get('/test')
-    assert mock_timer.return_value.send.called == time_exceptions
+    assert mock_timer.return_value.stop.called == time_exceptions
     assert not mock_close.called
 
 

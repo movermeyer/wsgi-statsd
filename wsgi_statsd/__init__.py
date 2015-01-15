@@ -26,25 +26,12 @@ class StatsdTimingMiddleware(object):
         :param environ: Dictionary object, containing CGI-style environment variables.
         :param start_response: Callable used to begin the HTTP response.
         """
-        interception = {}
+        response_interception = {}
 
         def start_response_wrapper(status, response_headers, exc_info=None):
-            """Closure function to wrap the start_response in order to retrieve the status code."""
-            interception['status'] = status
+            """Wrap the start_response in order to retrieve the status code."""
+            response_interception.update(status=status, response_headers=response_headers, exc_info=exc_info)
             return start_response(status, response_headers, exc_info)
-
-        def send_stats():
-            stop = time.time()
-            if interception:
-                # Now we can generate the key name.
-                status = interception['status'].split()[0]  # Leave only the status code.
-                key_name = '.'.join([environ['PATH_INFO'], environ['REQUEST_METHOD'], status])
-
-                # Create the timer object and send the data to statsd.
-                timer = self.statsd_client.timer(key_name)
-                time_delta = stop - start
-                timer.ms = int(round(1000 * time_delta))  # Convert to milliseconds.
-                timer.send()
 
         # Time the call.
         start = time.time()
@@ -56,8 +43,44 @@ class StatsdTimingMiddleware(object):
             finally:
                 if hasattr(response, 'close'):
                     response.close()
-            send_stats()
+            self.send_stats(start, environ, response_interception)
         except Exception:
             if self.time_exceptions:
-                send_stats()
+                self.send_stats(start, environ, response_interception)
             raise
+
+    def get_key_name(self, environ, response_interception):
+        """Get timer key name.
+
+        :param environ: wsgi environment
+        :type environ: dict
+        :response_interception: dictionary in form
+            {'status': '<response status>', 'response_headers': [<response headers], 'exc_info': <exc_info>}
+            This is the interception of what was passed to start_response handler.
+        :return: string in form 'DOTTED_PATH.METHOD.STATUS_CODE'
+        :rtype: str
+        """
+        status = response_interception.get('status')
+        status_code = status.split()[0]  # Leave only the status code.
+        # PATH_INFO can be empty, so falling back to '/' in that case
+        path = (environ['PATH_INFO'] or '/').replace('/', '.')[1:]
+        return '.'.join([path, environ['REQUEST_METHOD'], status_code])
+
+    def send_stats(self, start, environ, response_interception):
+        """Send the actual timing stats.
+
+        :param start: start time in seconds since the epoch as a floating point number
+        :type start: float
+        :param environ: wsgi environment
+        :type environ: dict
+        :response_interception: dictionary in form
+            {'status': '<response status>', 'response_headers': [<response headers], 'exc_info': <exc_info>}
+            This is the interception of what was passed to start_response handler.
+        """
+        # can happen that start_response wasn't called or failed, so we have empty interception
+        if response_interception:
+            # Create the timer object and send the data to statsd.
+            key_name = self.get_key_name(environ, response_interception)
+            timer = self.statsd_client.timer(key_name)
+            timer._start_time = start
+            timer.stop()

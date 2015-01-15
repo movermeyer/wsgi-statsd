@@ -50,6 +50,17 @@ In your wsgi.py file wrap your WSGI application as follows:
 
     application = StatsdTimingMiddleware(application, client)
 
+.. note::
+
+    If an unhandled exception happens, it will not be timed by default.
+    This is the design decision to separate error reporting and actual statistical measurements.
+    To enable exception timing, pass `time_exception=True` to the middleware constructor:
+
+
+.. code-block:: python
+
+    application = StatsdTimingMiddleware(application, client, time_exceptions=True)
+
 
 What it does
 ------------
@@ -66,17 +77,22 @@ Using the ``foo`` prefix and calling the ``www.spam.com/bar`` page will result i
 equal to the time it took to handle the request.
 
 
-.. note::
+Customizing for your needs
+--------------------------
 
-    If an unhandled exception happens, it will not be timed by default.
-    This is the design decision to separate error reporting and actual statistical measurements.
-    To enable exception timing, pass `time_exception=True` to the middleware constructor:
-
+It's possible to customize the way ``wsgi_statsd`` generates the key and/or time. ``StatsdTimingMiddleware`` has
+``send_stats`` and ``get_key_name`` which you can override:
 
 .. code-block:: python
 
-    application = StatsdTimingMiddleware(application, client, time_exceptions=True)
+    class CustomStatsdMiddleware(StatsdTimingMiddleware):
 
+        def get_key_name(self, environ, response_interception):
+            return super(self, CustomStatsdMiddleware).get_key_name(environ, response_interception) + '.' + environ['Transfer-Encoding']
+
+
+        def send_stats(self, start, environ, response_interception):
+            super(self, CustomStatsdMiddleware).send_stats(start + 10, environ, response_interception)
 
 
 Contact
