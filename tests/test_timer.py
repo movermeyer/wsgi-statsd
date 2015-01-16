@@ -73,7 +73,7 @@ def test_close_called(mock_client, mock_close):
 @mock.patch.object(AppIterRange, 'close')
 @mock.patch('statsd.StatsClient')
 def test_exception_response(mock_client, mock_close, time_exceptions):
-    """Assert that the we time exceptions (during the response) depending on the time_exceptions param."""
+    """Assert that we time exceptions (during the response) depending on the time_exceptions param."""
     with mock.patch.object(mock_client, 'timer', autospec=True) as mock_timer:
         timed_app = StatsdTimingMiddleware(raising_application, mock_client, time_exceptions=time_exceptions)
         app = TestApp(timed_app)

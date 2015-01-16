@@ -50,13 +50,14 @@ class StatsdTimingMiddleware(object):
             raise
 
     def get_key_name(self, environ, response_interception):
-        """Get timer key name.
+        """Get the timer key name.
 
         :param environ: wsgi environment
         :type environ: dict
-        :response_interception: dictionary in form
+        :param response_interception: dictionary in form
             {'status': '<response status>', 'response_headers': [<response headers], 'exc_info': <exc_info>}
             This is the interception of what was passed to start_response handler.
+        :type response_interception: dict
         :return: string in form 'DOTTED_PATH.METHOD.STATUS_CODE'
         :rtype: str
         """
@@ -73,11 +74,12 @@ class StatsdTimingMiddleware(object):
         :type start: float
         :param environ: wsgi environment
         :type environ: dict
-        :response_interception: dictionary in form
+        :param response_interception: dictionary in form
             {'status': '<response status>', 'response_headers': [<response headers], 'exc_info': <exc_info>}
             This is the interception of what was passed to start_response handler.
+        :type response_interception: dict
         """
-        # can happen that start_response wasn't called or failed, so we have empty interception
+        # It could happen that start_response wasn't called or it failed, so we might have an empty interception
         if response_interception:
             # Create the timer object and send the data to statsd.
             key_name = self.get_key_name(environ, response_interception)
