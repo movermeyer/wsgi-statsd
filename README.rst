@@ -77,7 +77,7 @@ Using the ``foo`` prefix and calling the ``www.spam.com/bar`` page will result i
 equal to the time it took to handle the request.
 
 If you passed `time_exceptions=True` and exception happened during the response, then the key name will be postfixed
-with the exception class name: ``foo.bar.GET.200.ValueError``
+with the exception class name: ``foo.bar.GET.500.ValueError``
 
 
 Customizing for your needs
