@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2.2
+0.2.3
 -----
 
 * Add exception class name to the key when exception happens (bubenkoff)

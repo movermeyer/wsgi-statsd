@@ -49,7 +49,7 @@ setup(
     author="Wouter Lansu, Paylogic International and others",
     license="MIT license",
     author_email="developers@paylogic.com",
-    url="https://github.com/paylogic/wsgi_statsd",
+    url="https://github.com/paylogic/wsgi-statsd",
     version=wsgi_statsd.__version__,
     classifiers=[
         'Development Status :: 4 - Beta',
