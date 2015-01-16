@@ -76,6 +76,9 @@ and the middleware will pass it along to statsd.
 Using the ``foo`` prefix and calling the ``www.spam.com/bar`` page will result in ``foo.bar.GET.200`` having a value
 equal to the time it took to handle the request.
 
+If you passed `time_exceptions=True` and exception happened during the response, then the key name will be postfixed
+with the exception class name: ``foo.bar.GET.200.ValueError``
+
 
 Customizing for your needs
 --------------------------

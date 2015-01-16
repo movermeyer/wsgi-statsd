@@ -1,7 +1,7 @@
 """StatsdTimingMiddleware object."""
 import time
 
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 
 
 class StatsdTimingMiddleware(object):
@@ -44,12 +44,12 @@ class StatsdTimingMiddleware(object):
                 if hasattr(response, 'close'):
                     response.close()
             self.send_stats(start, environ, response_interception)
-        except Exception:
+        except Exception as exception:
             if self.time_exceptions:
-                self.send_stats(start, environ, response_interception)
+                self.send_stats(start, environ, response_interception, exception)
             raise
 
-    def get_key_name(self, environ, response_interception):
+    def get_key_name(self, environ, response_interception, exception=None):
         """Get the timer key name.
 
         :param environ: wsgi environment
@@ -58,6 +58,9 @@ class StatsdTimingMiddleware(object):
             {'status': '<response status>', 'response_headers': [<response headers], 'exc_info': <exc_info>}
             This is the interception of what was passed to start_response handler.
         :type response_interception: dict
+        :param exception: optional exception happened during the iteration of the response
+        :type exception: Exception
+
         :return: string in form 'DOTTED_PATH.METHOD.STATUS_CODE'
         :rtype: str
         """
@@ -65,9 +68,12 @@ class StatsdTimingMiddleware(object):
         status_code = status.split()[0]  # Leave only the status code.
         # PATH_INFO can be empty, so falling back to '/' in that case
         path = (environ['PATH_INFO'] or '/').replace('/', '.')[1:]
-        return '.'.join([path, environ['REQUEST_METHOD'], status_code])
+        parts = [path, environ['REQUEST_METHOD'], status_code]
+        if exception:
+            parts.append(exception.__class__.__name__)
+        return '.'.join(parts)
 
-    def send_stats(self, start, environ, response_interception):
+    def send_stats(self, start, environ, response_interception, exception=None):
         """Send the actual timing stats.
 
         :param start: start time in seconds since the epoch as a floating point number
@@ -78,11 +84,13 @@ class StatsdTimingMiddleware(object):
             {'status': '<response status>', 'response_headers': [<response headers], 'exc_info': <exc_info>}
             This is the interception of what was passed to start_response handler.
         :type response_interception: dict
+        :param exception: optional exception happened during the iteration of the response
+        :type exception: Exception
         """
         # It could happen that start_response wasn't called or it failed, so we might have an empty interception
         if response_interception:
             # Create the timer object and send the data to statsd.
-            key_name = self.get_key_name(environ, response_interception)
+            key_name = self.get_key_name(environ, response_interception, exception=exception)
             timer = self.statsd_client.timer(key_name)
             timer._start_time = start
             timer.stop()

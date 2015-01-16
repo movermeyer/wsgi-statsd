@@ -74,18 +74,21 @@ def test_close_called(mock_client, mock_close):
 @mock.patch('statsd.StatsClient')
 def test_exception_response(mock_client, mock_close, time_exceptions):
     """Assert that we time exceptions (during the response) depending on the time_exceptions param."""
+    timed_app = StatsdTimingMiddleware(raising_application, mock_client, time_exceptions=time_exceptions)
+    app = TestApp(timed_app)
     with mock.patch.object(mock_client, 'timer', autospec=True) as mock_timer:
-        timed_app = StatsdTimingMiddleware(raising_application, mock_client, time_exceptions=time_exceptions)
-        app = TestApp(timed_app)
         with pytest.raises(Exception):
             app.get('/test')
     assert mock_timer.return_value.stop.called == time_exceptions
     assert not mock_close.called
+    if time_exceptions:
+        assert mock_timer.call_args[0] == ('test.GET.200.Exception',)
 
 
+@pytest.mark.parametrize('time_exceptions', [False, True])
 @mock.patch.object(AppIterRange, 'close')
 @mock.patch('statsd.StatsClient')
-def test_exception_iter(mock_client, mock_close, monkeypatch):
+def test_exception_iter(mock_client, mock_close, monkeypatch, time_exceptions):
     """Assert that the response close is called when exists even if there's exception during the iteration."""
     mock_close.next_called = False
 
@@ -98,9 +101,12 @@ def test_exception_iter(mock_client, mock_close, monkeypatch):
     else:
         monkeypatch.setattr(AppIterRange, 'next', response_next)
 
-    timed_app = StatsdTimingMiddleware(application, mock_client)
+    timed_app = StatsdTimingMiddleware(application, mock_client, time_exceptions=time_exceptions)
     app = TestApp(timed_app)
-    with pytest.raises(Exception):
-        app.get('/test')
+    with mock.patch.object(mock_client, 'timer', autospec=True) as mock_timer:
+        with pytest.raises(Exception):
+            app.get('/test')
     assert mock_close.called
     assert mock_close.next_called
+    if time_exceptions:
+        assert mock_timer.call_args[0] == ('test.GET.200.Exception',)
