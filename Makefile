@@ -9,3 +9,5 @@ develop: .env
 # clean the development envrironment
 clean:
 	-rm -rf .env
+
+.PHONY: clean develop .env

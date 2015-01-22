@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.3.0
+-----
+
+* Added clean target to Makefile.
+* Added the changes for the 0.2.6 version.
+
+0.2.6
+-----
+
+* Updated documentation.
+
 0.2.5
 -----
 
