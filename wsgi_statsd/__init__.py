@@ -1,7 +1,7 @@
 """StatsdTimingMiddleware object."""
 import time
 
-__version__ = '0.2.4'
+__version__ = '0.2.5'
 
 import re
 
@@ -68,17 +68,17 @@ class StatsdTimingMiddleware(object):
         :param exception: optional exception happened during the iteration of the response
         :type exception: Exception
 
-        :return: string in form '{{PATH}}_{{METHOD}}_{{STATUS_CODE}}'
+        :return: string in form '{{UNDERSCORED_PATH}}.{{METHOD}}.{{STATUS_CODE}}'
         :rtype: str
         """
         status = response_interception.get('status')
         status_code = status.split()[0]  # Leave only the status code.
         # PATH_INFO can be empty, so falling back to '/' in that case
-        path = CHAR_RE.sub(self.separator, (environ['PATH_INFO'] or '/')[1:])
+        path = CHAR_RE.sub(self.separator, (environ['PATH_INFO'].rstrip('\/') or '/')[1:])
         parts = [path, environ['REQUEST_METHOD'], status_code]
         if exception:
             parts.append(exception.__class__.__name__)
-        return self.separator.join(parts)
+        return '.'.join(parts)
 
     def send_stats(self, start, environ, response_interception, exception=None):
         """Send the actual timing stats.

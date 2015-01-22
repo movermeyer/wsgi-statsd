@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.2.5
+-----
+
+* Fixed issue with the separator parameter. It now functions as expected and documented.
+
 0.2.4
 -----
 

@@ -71,16 +71,17 @@ the status code variables as the name for the key and the amount of time the req
 If you want more granular reporting you'll have to work with the ``prefix`` argument. You can pass any string you want
 and the middleware will pass it along to statsd.
 
-Using the ``foo`` prefix and calling the ``www.spam.com/bar`` page will result in ``foo_bar_GET_200`` having a value
-equal to the time it took to handle the request.
+Using the ``foo`` prefix and calling the ``www.spam.com/bar/test/`` page will result in ``foo.bar_test.GET.200``
+having a value equal to the time it took to handle the request.
 
 If you passed `time_exceptions=True` and exception happened during the response, then the key name will be postfixed
-with the exception class name: ``foo_bar_GET_500_ValueError``
+with the exception class name: ``foo.bar_test.GET.500.ValueError``
 
 .. note::
 
-    wsgi-statsd uses underscores as a separator for the key that is sent to statsd as that makes it easy to retrieve the
-    data from graphite. You can override this default by passing a ``separator`` value to the middleware constructor:
+    wsgi-statsd uses underscores as a separator for the path part of the key that is sent to statsd as that makes it
+    easy to retrieve the data from graphite. You can override this default by passing a ``separator`` value to the
+    middleware constructor:
 
 
 .. code-block:: python
