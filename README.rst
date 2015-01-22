@@ -65,29 +65,15 @@ In your wsgi.py file wrap your WSGI application as follows:
 What it does
 ------------
 
-The middleware uses the statsd timer function, using the environ['PATH_INFO'], environ['REQUEST_METHOD'] and
-the status code variables as the name for the key and the amount of time the request took as the value.
+wsgi-statsd uses the statsd timer function, generates a key and sets the amount of time the request took as the value.
+The key is constructed as follows:
+    ``<statsd-client-prefix>.<separator-joined-path>.<request-method>.<response-code>.<exception-name>``
 
-If you want more granular reporting you'll have to work with the ``prefix`` argument. You can pass any string you want
-and the middleware will pass it along to statsd.
+Using the ``foo`` prefix, in your statsd client, and calling the ``www.spam.com/bar/test/`` page will result in ``foo
+.bar_test.GET.200`` having a value equal to the time it took to handle the request.
 
-Using the ``foo`` prefix and calling the ``www.spam.com/bar/test/`` page will result in ``foo.bar_test.GET.200``
-having a value equal to the time it took to handle the request.
-
-If you passed `time_exceptions=True` and exception happened during the response, then the key name will be postfixed
-with the exception class name: ``foo.bar_test.GET.500.ValueError``
-
-.. note::
-
-    wsgi-statsd uses underscores as a separator for the path part of the key that is sent to statsd as that makes it
-    easy to retrieve the data from graphite. You can override this default by passing a ``separator`` value to the
-    middleware constructor:
-
-
-.. code-block:: python
-
-    StatsdTimingMiddleware(application, client, separator='.')
-
+If you passed `time_exceptions=True` and any exception occurs during the response, then the key name will be postfixed
+with the exception class name: ``foo.bar_test.GET.500.ValueError``.
 
 
 Customizing for your needs
@@ -106,6 +92,16 @@ It's possible to customize the way ``wsgi_statsd`` generates the key and/or time
 
         def send_stats(self, start, environ, response_interception):
             super(self, CustomStatsdMiddleware).send_stats(start + 10, environ, response_interception)
+
+
+wsgi-statsd uses underscores as a separator for the path part of the key that is sent to statsd as that makes it
+easy to retrieve the data from graphite. You can override this default by passing a ``separator`` value to the
+middleware constructor:
+
+
+.. code-block:: python
+
+    StatsdTimingMiddleware(application, client, separator='.')
 
 
 Contact
