@@ -67,7 +67,8 @@ What it does
 
 wsgi-statsd uses the statsd timer function, generates a key and sets the amount of time the request took as the value.
 The key is constructed as follows:
-    ``<statsd-client-prefix>.<separator-joined-path>.<request-method>.<response-code>.<exception-name>``
+
+``<statsd-client-prefix>.<separator-joined-path>.<request-method>.<response-code>.<exception-name>``
 
 Using the ``foo`` prefix, in your statsd client, and calling the ``www.spam.com/bar/test/`` page will result in ``foo
 .bar_test.GET.200`` having a value equal to the time it took to handle the request.
