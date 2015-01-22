@@ -53,7 +53,7 @@ In your wsgi.py file wrap your WSGI application as follows:
 .. note::
 
     If an unhandled exception happens, it will not be timed by default.
-    This is the design decision to separate error reporting and actual statistical measurements.
+    This is a design decision to separate error reporting and actual statistical measurements.
     To enable exception timing, pass `time_exception=True` to the middleware constructor:
 
 
@@ -68,16 +68,25 @@ What it does
 The middleware uses the statsd timer function, using the environ['PATH_INFO'], environ['REQUEST_METHOD'] and
 the status code variables as the name for the key and the amount of time the request took as the value.
 
-That's it.
-
 If you want more granular reporting you'll have to work with the ``prefix`` argument. You can pass any string you want
 and the middleware will pass it along to statsd.
 
-Using the ``foo`` prefix and calling the ``www.spam.com/bar`` page will result in ``foo.bar.GET.200`` having a value
+Using the ``foo`` prefix and calling the ``www.spam.com/bar`` page will result in ``foo_bar_GET_200`` having a value
 equal to the time it took to handle the request.
 
 If you passed `time_exceptions=True` and exception happened during the response, then the key name will be postfixed
-with the exception class name: ``foo.bar.GET.500.ValueError``
+with the exception class name: ``foo_bar_GET_500_ValueError``
+
+.. note::
+
+    wsgi-statsd uses underscores as a separator for the key that is sent to statsd as that makes it easy to retrieve the
+    data from graphite. You can override this default by passing a ``separator`` value to the middleware constructor:
+
+
+.. code-block:: python
+
+    StatsdTimingMiddleware(application, client, separator='.')
+
 
 
 Customizing for your needs
@@ -108,9 +117,9 @@ the `GitHub project page <http://github.com/paylogic/wsgi-statsd>`_.
 License
 -------
 
-This software is licensed under the `MIT license <http://en.wikipedia.org/wiki/MIT_License>`_
+This software is licensed under the `MIT license <http://en.wikipedia.org/wiki/MIT_License>`_.
 
-Please refer to the `license file <https://github.com/paylogic/wsgi-statsd/blob/master/LICENSE.txt>`_
+Please refer to the `license file <https://github.com/paylogic/wsgi-statsd/blob/master/LICENSE.txt>`_.
 
 
 © 2015 Wouter Lansu, Paylogic International and others.

@@ -31,22 +31,22 @@ def raising_application(environ, start_response):
 
 
 @mock.patch('statsd.StatsClient')
-def test_timer1(mock_client):
+def test_timer(mock_client):
     """Test the timer functionality.
 
     Check the following:
     - timer.stop() is called
     - timer.ms is not None
-    - the key is generated as expected, i.e. PATH_INFO.REQUEST_METHOD.RESPONSE_CODE.
+    - the key is generated as expected, i.e. PATH_INFO_REQUEST_METHOD_RESPONSE_CODE.
     """
     with mock.patch.object(mock_client, 'timer', autospec=True) as mock_timer:
         timed_app = StatsdTimingMiddleware(application, mock_client)
         app = TestApp(timed_app)
-        app.get('/test')
+        app.get('/test/some/thing.ext?param=one&two=3')
 
     assert mock_timer.return_value.stop.called
     assert mock_timer.return_value.ms is not None
-    assert mock_timer.call_args[0] == ('test.GET.200',)
+    assert mock_timer.call_args[0] == ('test_some_thing_ext_GET_200',)
 
 
 @mock.patch('statsd.StatsClient')
@@ -82,7 +82,7 @@ def test_exception_response(mock_client, mock_close, time_exceptions):
     assert mock_timer.return_value.stop.called == time_exceptions
     assert not mock_close.called
     if time_exceptions:
-        assert mock_timer.call_args[0] == ('test.GET.200.Exception',)
+        assert mock_timer.call_args[0] == ('test_GET_200_Exception',)
 
 
 @pytest.mark.parametrize('time_exceptions', [False, True])
@@ -109,4 +109,4 @@ def test_exception_iter(mock_client, mock_close, monkeypatch, time_exceptions):
     assert mock_close.called
     assert mock_close.next_called
     if time_exceptions:
-        assert mock_timer.call_args[0] == ('test.GET.200.Exception',)
+        assert mock_timer.call_args[0] == ('test_GET_200_Exception',)

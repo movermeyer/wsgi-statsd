@@ -1,24 +1,31 @@
 """StatsdTimingMiddleware object."""
 import time
 
-__version__ = '0.2.3'
+__version__ = '0.2.4'
+
+import re
+
+CHAR_RE = re.compile(r'[^\w]')
 
 
 class StatsdTimingMiddleware(object):
 
     """The Statsd timing middleware."""
 
-    def __init__(self, app, client, time_exceptions=False):
+    def __init__(self, app, client, time_exceptions=False, separator='_'):
         """Initialize the middleware with an application and a Statsd client.
 
         :param app: The application object.
         :param client: `statsd.StatsClient` object.
         :param time_exceptions: send stats when exception happens or not, `False` by default.
         :type time_exceptions: bool
+        :param separator: separator of the parts of key sent to statsd, defaults to '_'
+        :type separator: str
         """
         self.app = app
         self.statsd_client = client
         self.time_exceptions = time_exceptions
+        self.separator = separator
 
     def __call__(self, environ, start_response):
         """Call the application and time it.
@@ -61,17 +68,17 @@ class StatsdTimingMiddleware(object):
         :param exception: optional exception happened during the iteration of the response
         :type exception: Exception
 
-        :return: string in form 'DOTTED_PATH.METHOD.STATUS_CODE'
+        :return: string in form '{{PATH}}_{{METHOD}}_{{STATUS_CODE}}'
         :rtype: str
         """
         status = response_interception.get('status')
         status_code = status.split()[0]  # Leave only the status code.
         # PATH_INFO can be empty, so falling back to '/' in that case
-        path = (environ['PATH_INFO'] or '/').replace('/', '.')[1:]
+        path = CHAR_RE.sub(self.separator, (environ['PATH_INFO'] or '/')[1:])
         parts = [path, environ['REQUEST_METHOD'], status_code]
         if exception:
             parts.append(exception.__class__.__name__)
-        return '.'.join(parts)
+        return self.separator.join(parts)
 
     def send_stats(self, start, environ, response_interception, exception=None):
         """Send the actual timing stats.

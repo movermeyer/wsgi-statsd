@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.2.4
+-----
+
+* Add separator parameter to StatsdTimingMiddleware.__init__().
+
 0.2.3
 -----
 
