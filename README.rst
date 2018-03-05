@@ -4,7 +4,7 @@ wsgi-statsd documentation
 .. image:: https://api.travis-ci.org/paylogic/wsgi-statsd.png
    :target: https://travis-ci.org/paylogic/wsgi-statsd
 
-.. image:: https://pypip.in/v/wsgi-statsd/badge.png
+.. image:: https://img.shields.io/pypi/v/wsgi-statsd.svg
    :target: https://crate.io/packages/wsgi-statsd/
 
 .. image:: https://coveralls.io/repos/paylogic/wsgi-statsd/badge.svg?branch=master
